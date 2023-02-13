@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <!-- <meta name="keywords" content="百度地图,百度地图API，百度地图自定义工具，百度地图所见即所得工具" />
+  <meta name="description" content="百度地图API自定义地图，帮助用户在可视化操作下生成百度地图" /> -->
+  <title>路口信号管理系统</title>
+  <link rel="stylesheet" href="../03_layout/CSS/reset.css">
+  <!--引用百度地图API-->
+  <script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=mSdasRk0xXKFdEX8uCDFBZRDhU3qokcr"></script>
+  <style>
+    .box {
+      margin: 0 auto;
+      width: 100%;
+      height: 100%;
+      border: 1px solid black;
+    }
+
+    .square1 {
+      border: 1px solid black;
+      height: 100px;
+      text-align: center;
+      line-height: 100px;
+    }
+
+    .main {
+      width: 100%;
+      height: 700px;
+    }
+
+    .square2 {
+      border: 1px solid black;
+      width: 20%;
+      height: 597px;
+
+    }
+
+    .a1,
+    .a2,
+    .a3 {
+      border: 1px solid black;
+      height: 50px;
+      text-align: center;
+      line-height: 50px;
+    }
+
+    .square3 {
+      border: 1px solid black;
+      width: 80%;
+      height: 597px;
+
+    }
+
+    .b1 {
+      border: 1px solid black;
+      width: 100%;
+      height: 100%;
+      text-align: center;
+      line-height: 400px;
+    }
+
+    .p1 {
+      margin-top: 100px;
+    }
+
+
+
+    .b3 p {
+      margin-top: 60px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="box">
+    <div class="square1">
+      <h1 style="text-align: center;font-weight: bold;font-size: 40px;">
+        路口信号管理系统
+      </h1>
+    </div>
+    <div class="main" style="display: flex;">
+      <div class="square2">
+        <div class="a1">
+          <p style="text-align: center;font-size: 30px;">主界面</p>
+        </div>
+
+      </div>
+      <div class="square3">
+        <div class="b1">
+          <!-- <p>地图</p> -->
+          <div style="width: 100%;height: 100%;border:#ccc solid 1px;font-size:12px" id="map"></div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+<!--百度地图容器-->
+<!-- <header id="header">
+    <nav class="links">
+      <ul>
+        <li><a href="https://www.freesion.com">首页</a></li>
+        <li><a href="mailto:freesion@gmx.com">联系我们</a></li>
+        <li><a href="https://www.freesion.com/copyright.html" target="_blank">版权申明</a></li>
+        <li><a href="https://www.freesion.com/privacy.html" target="_blank">隐私政策</a></li>
+      </ul>
+    </nav>
+    <nav class="main">
+      <ul>
+        <li class="search">
+          <a class="fa-search" href="javascript:void(0)" onclick="mysubmit();">搜索</a>
+          <form id="searchForm" name="searchForm" method="post" action="/search" onsubmit="return validate();">
+            <input type="text" name="s" id="s" placeholder="搜索">
+          </form>
+        </li>
+      </ul>
+    </nav>
+  </header> -->
+<div style="width: 1400px;height: 650px;border:#ccc solid 1px;font-size:12px" id="map"></div>
+<!-- <p style="color:red;font-weight:600">地图生成工具基于百度地图JS api v2.0版本开发，使用请申请密匙。
+      <a href="http://developer.baidu.com/map/index.php?title=jspopular/guide/introduction" style="color:#2f83c7" target="_blank">了解如何申请密匙</a>
+      <a href="http://lbsyun.baidu.com/apiconsole/key?application=key" style="color:#2f83c7" target="_blank">申请密匙</a>
+    </p> -->
+
+<script type="text/javascript">
+  //创建和初始化地图函数：
+  function initMap() {
+    createMap();//创建地图
+    setMapEvent();//设置地图事件
+    addMapControl();//向地图添加控件
+    addMapOverlay();//向地图添加覆盖物
+  }
+  function createMap() {
+    map = new BMap.Map("map");
+    map.centerAndZoom(new BMap.Point(115.866868, 28.712084), 13);
+  }
+  function setMapEvent() {
+    map.enableScrollWheelZoom();
+    map.enableKeyboard();
+    map.enableDragging();
+    map.enableDoubleClickZoom()
+  }
+  function addClickHandler(target, window) {
+    target.addEventListener("click", function () {
+      target.openInfoWindow(window);
+    });
+  }
+  function addMapOverlay() {
+    var markers = [
+      { content: "双港西大街与桂苑大道", title: "yyz", imageOffset: { width: 0, height: -21 }, position: { lat: 28.748363, lng: 115.848846 } },
+      { content: "怡园路和丰和中大道", title: "cbj", imageOffset: { width: -23, height: -21 }, position: { lat: 28.685713, lng: 115.857438 } },
+      { content: "庐山南大道和丰和北大道", title: "zcl", imageOffset: { width: -46, height: -21 }, position: { lat: 28.704161, lng: 115.875577 } }
+    ];
+    for (var index = 0; index < markers.length; index++) {
+      var point = new BMap.Point(markers[index].position.lng, markers[index].position.lat);
+      var marker = new BMap.Marker(point, {
+        icon: new BMap.Icon("http://api.map.baidu.com/lbsapi/createmap/images/icon.png", new BMap.Size(20, 25), {
+          imageOffset: new BMap.Size(markers[index].imageOffset.width, markers[index].imageOffset.height)
+        })
+      });
+      var label = new BMap.Label(markers[index].title, { offset: new BMap.Size(25, 5) });
+      var opts = {
+        width: 200,
+        title: markers[index].title,
+        enableMessage: false
+      };
+      var infoWindow = new BMap.InfoWindow(markers[index].content, opts);
+      marker.setLabel(label);
+      addClickHandler(marker, infoWindow);
+      map.addOverlay(marker);
+    };
+  }
+  //向地图添加控件
+  function addMapControl() {
+    var scaleControl = new BMap.ScaleControl({ anchor: BMAP_ANCHOR_BOTTOM_LEFT });
+    scaleControl.setUnit(BMAP_UNIT_IMPERIAL);
+    map.addControl(scaleControl);
+    var navControl = new BMap.NavigationControl({ anchor: BMAP_ANCHOR_TOP_LEFT, type: 0 });
+    map.addControl(navControl);
+    var overviewControl = new BMap.OverviewMapControl({ anchor: BMAP_ANCHOR_BOTTOM_RIGHT, isOpen: false });
+    map.addControl(overviewControl);
+  }
+  var map;
+  initMap();
+</script>
+
+</html>
